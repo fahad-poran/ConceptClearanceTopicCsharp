@@ -1,0 +1,21 @@
+using InterviewPrep.Console.Domain;
+
+namespace InterviewPrep.Console.Services;
+
+public static class DiscountEngine
+{
+    // Tuple return for interview-friendly multi-value output.
+    public static (decimal discountAmount, string reason) CalculateDiscount(Order order)
+    {
+        if (order.Total >= 1000m)
+        {
+            return (order.Total * 0.10m, "10% for orders >= 1000");
+        }
+
+        return order.Items.Count switch
+        {
+            >= 5 => (order.Total * 0.05m, "5% for 5+ items"),
+            _ => (0m, "No discount")
+        };
+    }
+}
