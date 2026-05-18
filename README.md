@@ -50,3 +50,5 @@ dotnet run --project InterviewPrep.Console
 3. Explain pros/cons of generic repository.
 4. Explain pattern matching benefit over if/else chains.
 5. Explain value/reference copy behavior with exact output from the program.
+
+Sync test note: repository sync workflow configured.
