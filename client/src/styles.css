@@ -224,20 +224,7 @@ h2 { margin-top: 0; }
 
 .code-walkthrough pre {
   max-width: 100%;
-  margin: 0;
   overflow-x: auto;
-  border: 1px solid #c9d6e4;
-  border-radius: 10px;
-  background: #132235;
-  color: #f4f8fb;
-  padding: 0.9rem;
-  line-height: 1.55;
-  font-size: 0.9rem;
-}
-
-.code-walkthrough code {
-  font-family: Consolas, "Courier New", monospace;
-  white-space: pre;
 }
 
 .code-walkthrough__notes {
@@ -316,7 +303,6 @@ th, td {
   background: #ecf8f1;
   border: 1px solid #b6e5c9;
   color: #1f7a46;
-  display: none;
 }
 
 @media (max-width: 900px) {

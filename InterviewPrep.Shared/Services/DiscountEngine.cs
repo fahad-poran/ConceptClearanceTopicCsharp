@@ -1,10 +1,9 @@
-using InterviewPrep.Console.Domain;
+using InterviewPrep.Shared.Domain;
 
-namespace InterviewPrep.Console.Services;
+namespace InterviewPrep.Shared.Services;
 
 public static class DiscountEngine
 {
-    // Tuple return for interview-friendly multi-value output.
     public static (decimal discountAmount, string reason) CalculateDiscount(Order order)
     {
         if (order.Total >= 1000m)

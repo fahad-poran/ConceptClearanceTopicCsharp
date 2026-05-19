@@ -9,20 +9,71 @@
 <body>
   <header class="hero">
     <div class="hero__content">
-      <p class="eyebrow">Concept Clearance for .NET 3+ Years</p>
+      <p class="eyebrow">Beginner-friendly course path</p>
       <h1>.NET 8 Interview Prep Studio</h1>
       <p class="hero__sub">
-        Learn with a real-world e-commerce example using OOP, CTS, tuples, readonly,
-        pattern matching, generics, delegates, events, and modern .NET 8 features.
+        Follow a guided lesson flow instead of a mixed dashboard. Each topic explains the definition,
+        why it matters, where it appears in the project, and the steps to understand it.
       </p>
       <div class="hero__actions">
-        <a href="#calculator" class="btn btn--primary">Try Order Calculator</a>
-        <a href="#topics" class="btn btn--ghost">Browse Topics</a>
+        <a href="#course" class="btn btn--primary">Start the course</a>
+        <a href="#calculator" class="btn btn--ghost">Try the calculator</a>
       </div>
     </div>
   </header>
 
   <main class="layout">
+    <section class="panel panel--intro">
+      <h2 id="overviewTitle">Project Overview</h2>
+      <p class="muted" id="overviewText"></p>
+    </section>
+
+    <section id="course" class="course-shell">
+      <aside class="course-nav panel">
+        <div class="course-nav__header">
+          <h2>Course outline</h2>
+          <p class="muted">Move through the topics in a steady learning order.</p>
+        </div>
+        <ol id="courseNav" class="course-nav__list" aria-label="Course navigation"></ol>
+      </aside>
+
+      <section class="panel lesson-pane" aria-live="polite">
+        <div class="lesson-progress">
+          <span id="lessonStep" class="lesson-progress__step"></span>
+          <span id="lessonCount" class="lesson-progress__count"></span>
+        </div>
+        <h2 id="lessonTitle"></h2>
+        <p id="lessonDefinition" class="lesson-definition"></p>
+        <p id="lessonDescription" class="lesson-description"></p>
+
+        <div class="lesson-grid">
+          <article class="lesson-block">
+            <h3>Why it matters</h3>
+            <p id="lessonWhy" class="muted"></p>
+          </article>
+          <article class="lesson-block">
+            <h3>Where it appears</h3>
+            <p id="lessonWhere" class="muted"></p>
+          </article>
+        </div>
+
+        <article class="lesson-block">
+          <h3>Step-by-step guide</h3>
+          <ol id="lessonSteps" class="lesson-steps"></ol>
+        </article>
+
+        <article class="lesson-block">
+          <h3>Code walkthrough</h3>
+          <div id="lessonCodeWalkthroughs" class="code-walkthroughs"></div>
+        </article>
+
+        <article class="lesson-block lesson-block--recap">
+          <h3>Quick recap</h3>
+          <p id="lessonRecap" class="muted"></p>
+        </article>
+      </section>
+    </section>
+
     <section id="calculator" class="panel">
       <h2>Real-World Order Calculator</h2>
       <p class="muted">Use sample SKUs (`LAPTOP-001`, `MOUSE-010`, `BAG-200`) to see live discount logic.</p>
@@ -70,11 +121,6 @@
       </div>
 
       <div id="result" class="result" aria-live="polite"></div>
-    </section>
-
-    <section id="topics" class="panel">
-      <h2>Interview Topic Navigator</h2>
-      <div class="cards" id="topicCards"></div>
     </section>
   </main>
 

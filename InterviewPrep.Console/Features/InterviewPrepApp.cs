@@ -1,6 +1,10 @@
-using InterviewPrep.Console.Common;
-using InterviewPrep.Console.Domain;
-using InterviewPrep.Console.Services;
+using InterviewPrep.Shared.Common;
+using InterviewPrep.Shared.Contracts;
+using InterviewPrep.Shared.Domain;
+using InterviewPrep.Shared.Features;
+using InterviewPrep.Shared.Services;
+using DomainOrderItem = InterviewPrep.Shared.Domain.OrderItem;
+using SharedOrderItem = InterviewPrep.Shared.Contracts.OrderItem;
 
 namespace InterviewPrep.Console.Features;
 
@@ -8,6 +12,7 @@ public sealed class InterviewPrepApp
 {
     private readonly TimeProvider _timeProvider = TimeProvider.System;
     private readonly InventoryService _inventory;
+    private readonly OrderCalculationService _orderCalculationService;
 
     public InterviewPrepApp()
     {
@@ -18,6 +23,7 @@ public sealed class InterviewPrepApp
             ["MOUSE-010"] = 50,
             ["BAG-200"] = 20
         });
+        _orderCalculationService = new OrderCalculationService(_inventory);
     }
 
     public void Run()
@@ -76,7 +82,7 @@ public sealed class InterviewPrepApp
     private static void ShowProjectOverview()
     {
         global::System.Console.WriteLine("\n--- Project Overview ---");
-        global::System.Console.WriteLine("Scenario: E-commerce order placement and payment processing.");
+        global::System.Console.WriteLine(InterviewPrepCatalog.ProjectOverview);
         global::System.Console.WriteLine("Goal: Learn interview-focused C# and .NET 8 topics with practical code.");
         global::System.Console.WriteLine("Style: Small modules, real naming, and comments explaining 'why'.");
         global::System.Console.WriteLine();
@@ -93,7 +99,7 @@ public sealed class InterviewPrepApp
         };
 
         // Collection expression (modern C#): concise, readable initialization for fixed demo data.
-        OrderItem[] cartItems =
+        SharedOrderItem[] cartItems =
         [
             new("LAPTOP-001", 1, 1200m),
             new("MOUSE-010", 2, 25m)
@@ -104,7 +110,7 @@ public sealed class InterviewPrepApp
         {
             if (_inventory.IsInStock(item.Sku, item.Quantity))
             {
-                order.AddItem(item);
+                order.AddItem(new DomainOrderItem(item.Sku, item.Quantity, item.UnitPrice));
             }
         }
 
@@ -132,6 +138,15 @@ public sealed class InterviewPrepApp
         processor.Complete(order.OrderId, finalAmount);
 
         global::System.Console.WriteLine("\nOrder demo completed.");
+
+        var apiStyleResponse = _orderCalculationService.Calculate(
+            new OrderRequest(
+                "Alice Johnson",
+                cartItems
+                    .Select(item => new SharedOrderItem(item.Sku, item.Quantity, item.UnitPrice))
+                    .ToArray()),
+            _timeProvider.GetUtcNow().UtcDateTime);
+        global::System.Console.WriteLine($"Shared order service final total: {apiStyleResponse.FinalTotal:C}");
     }
 
     private static void OnPaymentCompleted(string orderId, decimal amount)
@@ -181,24 +196,32 @@ public sealed class InterviewPrepApp
     private static void ShowFeatureMap()
     {
         global::System.Console.WriteLine("\n--- Topic-to-File Navigation Map ---");
-        global::System.Console.WriteLine("OOP + Polymorphism: Domain/Payment.cs, Services/PaymentProcessor.cs");
-        global::System.Console.WriteLine("CTS: Features/InterviewPrepApp.cs");
-        global::System.Console.WriteLine("Tuple: Services/DiscountEngine.cs");
-        global::System.Console.WriteLine("readonly: Domain/OrderItem.cs");
-        global::System.Console.WriteLine("Generics: Common/Repository.cs");
-        global::System.Console.WriteLine("Pattern Matching: Services/PaymentProcessor.cs, Services/DiscountEngine.cs");
-        global::System.Console.WriteLine("Delegate/Event: Services/PaymentProcessor.cs");
-        global::System.Console.WriteLine(".NET 8 highlights: FrozenDictionary, TimeProvider, required, primary constructors");
+        global::System.Console.WriteLine("This view is grouped by learning area so OOP/polymorphism is easier to trace.");
+        foreach (var line in InterviewPrepCatalog.FeatureMap)
+        {
+            global::System.Console.WriteLine(line);
+        }
+        global::System.Console.WriteLine();
+        global::System.Console.WriteLine("--- Learning Sections ---");
+        foreach (var topic in InterviewPrepCatalog.CourseTopics)
+        {
+            global::System.Console.WriteLine(topic.Title);
+            global::System.Console.WriteLine($"- {topic.Definition}");
+            foreach (var step in topic.Steps)
+            {
+                global::System.Console.WriteLine($"  * {step}");
+            }
+            global::System.Console.WriteLine($"  Recap: {topic.Recap}");
+        }
     }
 
     private static void ShowInterviewQuestions()
     {
         global::System.Console.WriteLine("\n--- Interview Practice Questions ---");
-        global::System.Console.WriteLine("1. Why use readonly record struct for OrderItem?");
-        global::System.Console.WriteLine("2. Difference between delegate and event in this project?");
-        global::System.Console.WriteLine("3. Where is pattern matching helping readability?");
-        global::System.Console.WriteLine("4. Show CTS with value/reference and boxing/unboxing from output.");
-        global::System.Console.WriteLine("5. Why choose FrozenDictionary for inventory?");
+        for (var i = 0; i < InterviewPrepCatalog.PracticeQuestions.Count; i++)
+        {
+            global::System.Console.WriteLine($"{i + 1}. {InterviewPrepCatalog.PracticeQuestions[i]}");
+        }
     }
 
     private static void Pause()

@@ -1,4 +1,6 @@
-using System.Collections.Frozen;
+using InterviewPrep.Shared.Contracts;
+using InterviewPrep.Shared.Features;
+using InterviewPrep.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,66 +14,43 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton(new InventoryService(new Dictionary<string, int>
+{
+    ["LAPTOP-001"] = 10,
+    ["MOUSE-010"] = 50,
+    ["BAG-200"] = 20
+}));
+builder.Services.AddSingleton<OrderCalculationService>();
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("FrontendDev");
 
-// Minimal API endpoint used by the browser app for a real-time order calculation demo.
-app.MapPost("/api/order/calculate", (OrderRequest request) =>
+app.MapGet("/api/interview/overview", () => Results.Ok(new { title = ".NET 8 Interview Prep Studio", summary = InterviewPrepCatalog.ProjectOverview }));
+
+app.MapGet("/api/interview/topics", () => Results.Ok(InterviewPrepCatalog.Topics
+    .Select(topic => new { title = topic.Title, detail = topic.Detail })));
+
+app.MapGet("/api/interview/course", () => Results.Ok(InterviewPrepCatalog.CourseTopics));
+
+app.MapGet("/api/interview/course/{id}", (string id) =>
 {
-    FrozenDictionary<string, int> inventory = new Dictionary<string, int>
-    {
-        ["LAPTOP-001"] = 10,
-        ["MOUSE-010"] = 50,
-        ["BAG-200"] = 20
-    }.ToFrozenDictionary();
+    var topic = InterviewPrepCatalog.GetTopic(id);
+    return Results.Ok(topic);
+});
 
-    var acceptedItems = new List<OrderItem>();
+app.MapGet("/api/interview/questions", () => Results.Ok(InterviewPrepCatalog.PracticeQuestions));
 
-    foreach (var item in request.Items)
-    {
-        if (inventory.TryGetValue(item.Sku, out var stock) && stock >= item.Quantity)
-        {
-            acceptedItems.Add(item);
-        }
-    }
+app.MapGet("/api/interview/feature-map", () => Results.Ok(InterviewPrepCatalog.FeatureMap));
 
-    var gross = acceptedItems.Sum(x => x.Quantity * x.UnitPrice);
-
-    var (discountAmount, reason) = gross switch
-    {
-        >= 1000m => (gross * 0.10m, "10% for orders >= 1000"),
-        _ when acceptedItems.Count >= 5 => (gross * 0.05m, "5% for 5+ accepted items"),
-        _ => (0m, "No discount")
-    };
-
-    var response = new OrderCalculationResponse(
-        RequestId: $"REQ-{DateTime.UtcNow:yyyyMMddHHmmss}",
-        AcceptedItems: acceptedItems,
-        GrossTotal: gross,
-        DiscountAmount: discountAmount,
-        DiscountReason: reason,
-        FinalTotal: gross - discountAmount,
-        GeneratedAtUtc: DateTime.UtcNow
-    );
-
+app.MapPost("/api/order/calculate", (OrderRequest request, OrderCalculationService calculator, TimeProvider timeProvider) =>
+{
+    var response = calculator.Calculate(request, timeProvider.GetUtcNow().UtcDateTime);
     return Results.Ok(response);
 });
 
 app.MapFallbackToFile("index.html");
 app.Run();
-
-public sealed record OrderRequest(string CustomerName, IReadOnlyList<OrderItem> Items);
-public readonly record struct OrderItem(string Sku, int Quantity, decimal UnitPrice);
-
-public sealed record OrderCalculationResponse(
-    string RequestId,
-    IReadOnlyList<OrderItem> AcceptedItems,
-    decimal GrossTotal,
-    decimal DiscountAmount,
-    string DiscountReason,
-    decimal FinalTotal,
-    DateTime GeneratedAtUtc
-);

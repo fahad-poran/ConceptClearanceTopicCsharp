@@ -8,13 +8,14 @@ Now it includes both:
 ## Projects
 - `InterviewPrep.Console`: menu-driven console learning flow
 - `InterviewPrep.Web`: interactive browser app with order calculator + topic cards
+- `InterviewPrep.Shared`: shared domain, services, and interview catalog used by both hosts
 
 ## Browser app (new)
 The web project provides a clean client view built with:
 - HTML for structure
 - CSS for polished responsive layout
 - Vanilla JavaScript for interactivity
-- ASP.NET Core Minimal API for real-time order calculation
+- ASP.NET Core Minimal API for real-time order calculation and interview content endpoints
 
 ### Features in browser
 - Hero landing with guided actions

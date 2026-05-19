@@ -1,6 +1,5 @@
-namespace InterviewPrep.Console.Common;
+namespace InterviewPrep.Shared.Common;
 
-// Generic repository example for interview discussion.
 public interface IRepository<T>
 {
     void Add(T item);
@@ -18,7 +17,6 @@ public sealed class InMemoryRepository<T> : IRepository<T>
 
 public static class GenericUtility
 {
-    // Generic method with constraints is a frequent question.
     public static T MaxByValue<T>(T left, T right) where T : IComparable<T>
         => left.CompareTo(right) >= 0 ? left : right;
 }

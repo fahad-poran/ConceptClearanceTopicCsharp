@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewPrep.Console", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewPrep.Web", "InterviewPrep.Web\InterviewPrep.Web.csproj", "{8A6D78BC-1254-4B23-8128-2204FB1F82F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewPrep.Shared", "InterviewPrep.Shared\InterviewPrep.Shared.csproj", "{E31E5A1D-4A7A-4C9E-8A7C-0B0E3D5C4E11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{8A6D78BC-1254-4B23-8128-2204FB1F82F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A6D78BC-1254-4B23-8128-2204FB1F82F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A6D78BC-1254-4B23-8128-2204FB1F82F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E31E5A1D-4A7A-4C9E-8A7C-0B0E3D5C4E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E31E5A1D-4A7A-4C9E-8A7C-0B0E3D5C4E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E31E5A1D-4A7A-4C9E-8A7C-0B0E3D5C4E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E31E5A1D-4A7A-4C9E-8A7C-0B0E3D5C4E11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

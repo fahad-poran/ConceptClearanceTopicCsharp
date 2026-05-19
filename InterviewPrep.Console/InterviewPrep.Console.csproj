@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InterviewPrep.Shared\InterviewPrep.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
