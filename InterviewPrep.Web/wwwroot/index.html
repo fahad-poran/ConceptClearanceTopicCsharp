@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>.NET 8 Interview Prep Web</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">Concept Clearance for .NET 3+ Years</p>
+      <h1>.NET 8 Interview Prep Studio</h1>
+      <p class="hero__sub">
+        Learn with a real-world e-commerce example using OOP, CTS, tuples, readonly,
+        pattern matching, generics, delegates, events, and modern .NET 8 features.
+      </p>
+      <div class="hero__actions">
+        <a href="#calculator" class="btn btn--primary">Try Order Calculator</a>
+        <a href="#topics" class="btn btn--ghost">Browse Topics</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section id="calculator" class="panel">
+      <h2>Real-World Order Calculator</h2>
+      <p class="muted">Use sample SKUs (`LAPTOP-001`, `MOUSE-010`, `BAG-200`) to see live discount logic.</p>
+
+      <form id="orderForm" class="form-grid">
+        <label>
+          Customer Name
+          <input type="text" id="customerName" value="Alice Johnson" required />
+        </label>
+
+        <label>
+          SKU
+          <input type="text" id="sku" value="LAPTOP-001" required />
+        </label>
+
+        <label>
+          Quantity
+          <input type="number" id="quantity" value="1" min="1" required />
+        </label>
+
+        <label>
+          Unit Price
+          <input type="number" id="unitPrice" value="1200" min="1" step="0.01" required />
+        </label>
+
+        <div class="actions">
+          <button type="button" class="btn btn--secondary" id="addItemBtn">Add Item</button>
+          <button type="submit" class="btn btn--primary">Calculate</button>
+          <button type="button" class="btn btn--ghost" id="clearBtn">Clear</button>
+        </div>
+      </form>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Line Total</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
+
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+
+    <section id="topics" class="panel">
+      <h2>Interview Topic Navigator</h2>
+      <div class="cards" id="topicCards"></div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
