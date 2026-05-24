@@ -10,7 +10,8 @@ $ErrorActionPreference = "Stop"
 
 $existing = Get-NetFirewallRule -DisplayName $RuleName -ErrorAction SilentlyContinue
 if ($null -ne $existing) {
-    Write-Host "Firewall rule already exists: $RuleName"
+    Set-NetFirewallRule -DisplayName $RuleName -Profile Any
+    Write-Host "Firewall rule already exists and was updated: $RuleName"
     exit 0
 }
 
@@ -20,4 +21,4 @@ New-NetFirewallRule `
     -Action Allow `
     -Protocol TCP `
     -LocalPort $Port `
-    -Profile Private
+    -Profile Any

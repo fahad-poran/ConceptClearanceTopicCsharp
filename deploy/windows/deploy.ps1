@@ -72,3 +72,29 @@ Set-Content -Path $activeReleaseFile -Value $releaseName -NoNewline
 if ($null -ne $task) {
     Start-ScheduledTask -TaskName $TaskName
 }
+
+function Wait-ForPort {
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Port,
+
+        [Parameter(Mandatory = $false)]
+        [int]$TimeoutSeconds = 60
+    )
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    do {
+        $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+        if ($null -ne $listener) {
+            return $true
+        }
+
+        Start-Sleep -Seconds 1
+    } while ((Get-Date) -lt $deadline)
+
+    return $false
+}
+
+if (-not (Wait-ForPort -Port 5157 -TimeoutSeconds 60)) {
+    throw "The app did not start listening on port 5157 after deployment."
+}

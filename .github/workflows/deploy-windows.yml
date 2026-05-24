@@ -17,7 +17,7 @@ env:
   TASK_NAME: InterviewPrepWeb
   APP_ROOT: C:\apps\InterviewPrepWeb
   EXE_NAME: InterviewPrep.Web.exe
-  APP_URL: http://0.0.0.0:5157
+  APP_URL: http://+:5157
 
 jobs:
   build:

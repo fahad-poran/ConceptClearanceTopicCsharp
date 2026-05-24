@@ -60,6 +60,7 @@ This repo includes a starter GitHub Actions deployment for a private Windows ser
 - Release folders: `C:\apps\InterviewPrepWeb\releases\<run-id>-<attempt>`
 - Active release file: `C:\apps\InterviewPrepWeb\active-release.txt`
 - LAN URL: `http://<windows-ip>:5157`
+- Local URL on the server: `http://localhost:5157`
 
 ### One-time setup on the Windows machine
 

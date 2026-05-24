@@ -125,7 +125,7 @@ Run this on the Windows PC as administrator from the repository root:
   -DisplayName "InterviewPrep Web" `
   -AppRoot C:\apps\InterviewPrepWeb `
   -ExeName InterviewPrep.Web.exe `
-  -AppUrl http://0.0.0.0:5157
+  -AppUrl http://+:5157
 ```
 
 If you are already inside `deploy\windows`, then use:
@@ -136,7 +136,7 @@ If you are already inside `deploy\windows`, then use:
   -DisplayName "InterviewPrep Web" `
   -AppRoot C:\apps\InterviewPrepWeb `
   -ExeName InterviewPrep.Web.exe `
-  -AppUrl http://0.0.0.0:5157
+  -AppUrl http://+:5157
 ```
 
 ## Allow LAN Access
@@ -168,3 +168,4 @@ If you update `install-service.ps1` or `run-app.ps1`, run the install script aga
 - If deployment fails, check the job logs in GitHub Actions.
 - If the backend is not reachable from another device, verify the firewall rule and the port `5157`.
 - If the app does not start after deployment, check that `InterviewPrep.Web.exe` exists in `C:\apps\InterviewPrepWeb`.
+- If you are on the Windows PC itself, `http://localhost:5157` should also work.
