@@ -117,10 +117,20 @@ The runner only receives deployment jobs. The backend itself also needs to start
 
 For that, we use a Windows startup task.
 
-Run this on the Windows PC as administrator:
+Run this on the Windows PC as administrator from the repository root:
 
 ```powershell
-deploy\windows\install-service.ps1 `
+.\deploy\windows\install-service.ps1 `
+  -TaskName InterviewPrepWeb `
+  -DisplayName "InterviewPrep Web" `
+  -ExePath C:\apps\InterviewPrepWeb\InterviewPrep.Web.exe `
+  -AppUrl http://0.0.0.0:5157
+```
+
+If you are already inside `deploy\windows`, then use:
+
+```powershell
+.\install-service.ps1 `
   -TaskName InterviewPrepWeb `
   -DisplayName "InterviewPrep Web" `
   -ExePath C:\apps\InterviewPrepWeb\InterviewPrep.Web.exe `

@@ -76,7 +76,62 @@ This repo includes a starter GitHub Actions deployment for a private Windows ser
 - Delegates/events: console module
 - .NET 8: `FrozenDictionary`, primary constructors, `TimeProvider`, `required`
 
-## Quick git sync
+## Quick Git sync for junior developers
+
+Yes, you can use the included `sync.sh` script to push changes without typing these commands every time:
+
+```bash
+git add .
+git commit -m "your message"
+git push origin main
+```
+
+The script already runs those steps for you.
+
+### One-time setup
+
+Run this once from the project root:
+
+```bash
+chmod +x sync.sh
+```
+
+Make sure GitHub authentication is already configured on your machine. For example, you can use GitHub CLI:
+
+```bash
+gh auth login
+```
+
+### Push changes with one command
+
+From the project root, run:
+
 ```bash
 ./sync.sh "your commit message"
 ```
+
+Example:
+
+```bash
+./sync.sh "Add lesson pagination"
+```
+
+This will:
+
+1. Stage all changed and new files with `git add .`.
+2. Create a commit using your message.
+3. Push the commit to the `main` branch on GitHub.
+
+After the push reaches `main`, the publish deployment can run from GitHub Actions.
+
+### Important notes
+
+- Always check your changed files before syncing:
+
+```bash
+git status
+```
+
+- Do not use `./sync.sh` if you have private files, test files, or unfinished changes that should not be pushed.
+- Write a clear commit message so other developers understand the change.
+- The script pushes to `origin main`, so use it only when your change is ready for the main branch.

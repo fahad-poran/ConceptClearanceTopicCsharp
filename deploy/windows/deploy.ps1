@@ -26,13 +26,48 @@ if (-not (Test-Path $DeployPath)) {
 }
 
 $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+$processName = [System.IO.Path]::GetFileNameWithoutExtension($ExeName)
+
 if ($null -ne $task) {
-    $processName = [System.IO.Path]::GetFileNameWithoutExtension($ExeName)
-    Stop-Process -Name $processName -Force -ErrorAction SilentlyContinue
+    Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 }
 
-# Clear the deployment folder so old files do not survive a new release.
-Get-ChildItem -Path $DeployPath -Force | Remove-Item -Recurse -Force
+Stop-Process -Name $processName -Force -ErrorAction SilentlyContinue
+
+$deadline = (Get-Date).AddSeconds(30)
+while ((Get-Process -Name $processName -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline) {
+    Start-Sleep -Seconds 1
+}
+
+if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
+    throw "The process $processName is still running and is locking files in $DeployPath."
+}
+
+function Remove-DeploymentContents {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $items = Get-ChildItem -Path $Path -Force -ErrorAction SilentlyContinue
+    foreach ($item in $items) {
+        Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction Stop
+    }
+}
+
+for ($attempt = 1; $attempt -le 5; $attempt++) {
+    try {
+        # Clear the deployment folder so old files do not survive a new release.
+        Remove-DeploymentContents -Path $DeployPath
+        break
+    } catch {
+        if ($attempt -eq 5) {
+            throw
+        }
+
+        Start-Sleep -Seconds 2
+    }
+}
 
 Copy-Item -Path (Join-Path $PublishPath "*") -Destination $DeployPath -Recurse -Force
 
