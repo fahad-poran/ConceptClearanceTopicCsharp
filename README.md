@@ -34,6 +34,38 @@ dotnet run --project InterviewPrep.Web --urls http://localhost:5157
 Then open:
 - `http://localhost:5157`
 
+## Deploy to a Windows test machine
+
+This repo includes a starter GitHub Actions deployment for a private Windows server on your local network.
+
+### How it works
+
+1. Push to `main`.
+2. GitHub Actions publishes `InterviewPrep.Web` as a Windows self-contained app.
+3. A self-hosted Windows runner on your PC downloads the build artifact.
+4. A PowerShell deploy script replaces the files and restarts a Windows startup task.
+
+### Files added for deployment
+
+- [`.github/workflows/deploy-windows.yml`](.github/workflows/deploy-windows.yml)
+- [`deploy/windows/deploy.ps1`](deploy/windows/deploy.ps1)
+- [`deploy/windows/install-service.ps1`](deploy/windows/install-service.ps1)
+- [`deploy/windows/configure-firewall.ps1`](deploy/windows/configure-firewall.ps1)
+- [`deploy/windows/runner-setup.md`](deploy/windows/runner-setup.md)
+
+### Windows startup task details
+
+- Task name: `InterviewPrepWeb`
+- Deploy directory: `C:\apps\InterviewPrepWeb`
+- LAN URL: `http://<windows-ip>:5157`
+
+### One-time setup on the Windows machine
+
+1. Install the self-hosted GitHub runner and give it the labels `self-hosted`, `windows`, and `x64`.
+2. Run `deploy/windows/install-service.ps1` once as administrator to register the startup task.
+3. Run `deploy/windows/configure-firewall.ps1` once as administrator to allow your LAN to reach the app port.
+4. Keep the runner running so deployments can happen automatically on each push.
+
 ## Interview topic coverage map
 - OOP: Payment model + processing flow
 - CTS: value/reference + boxing/unboxing (console module)

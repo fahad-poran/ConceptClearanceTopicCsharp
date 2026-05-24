@@ -1,0 +1,79 @@
+name: Deploy InterviewPrep.Web to Windows Test Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-interviewprep-web-windows
+  cancel-in-progress: true
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  APP_PROJECT: InterviewPrep.Web/InterviewPrep.Web.csproj
+  ARTIFACT_NAME: interviewprep-web-drop
+  TASK_NAME: InterviewPrepWeb
+  DEPLOY_DIR: C:\apps\InterviewPrepWeb
+  EXE_NAME: InterviewPrep.Web.exe
+  APP_URL: http://0.0.0.0:5157
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore "${{ env.APP_PROJECT }}"
+
+      - name: Publish Windows build
+        run: >
+          dotnet publish "${{ env.APP_PROJECT }}"
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=false
+          -o publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: publish/
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, windows, x64]
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ github.workspace }}\published
+
+      - name: Deploy package
+        run: |
+          $publishPath = Join-Path $env:GITHUB_WORKSPACE "published"
+          & "$env:GITHUB_WORKSPACE\deploy\windows\deploy.ps1" `
+            -PublishPath $publishPath `
+            -DeployPath "${{ env.DEPLOY_DIR }}" `
+            -TaskName "${{ env.TASK_NAME }}" `
+            -ExeName "${{ env.EXE_NAME }}" `
+            -AppUrl "${{ env.APP_URL }}"
