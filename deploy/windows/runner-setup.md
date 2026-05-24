@@ -123,7 +123,8 @@ Run this on the Windows PC as administrator from the repository root:
 .\deploy\windows\install-service.ps1 `
   -TaskName InterviewPrepWeb `
   -DisplayName "InterviewPrep Web" `
-  -ExePath C:\apps\InterviewPrepWeb\InterviewPrep.Web.exe `
+  -AppRoot C:\apps\InterviewPrepWeb `
+  -ExeName InterviewPrep.Web.exe `
   -AppUrl http://0.0.0.0:5157
 ```
 
@@ -133,7 +134,8 @@ If you are already inside `deploy\windows`, then use:
 .\install-service.ps1 `
   -TaskName InterviewPrepWeb `
   -DisplayName "InterviewPrep Web" `
-  -ExePath C:\apps\InterviewPrepWeb\InterviewPrep.Web.exe `
+  -AppRoot C:\apps\InterviewPrepWeb `
+  -ExeName InterviewPrep.Web.exe `
   -AppUrl http://0.0.0.0:5157
 ```
 
@@ -154,9 +156,11 @@ After setup, the flow should be:
 1. You push code to `main`
 2. GitHub Actions builds `InterviewPrep.Web`
 3. The self-hosted Windows runner receives the deployment job
-4. The deploy script copies the new files to `C:\apps\InterviewPrepWeb`
+4. The deploy script copies the new files into a versioned release folder under `C:\apps\InterviewPrepWeb\releases`
 5. The startup task runs the backend automatically
 6. You open `http://<windows-ip>:5157` from another device on your LAN
+
+If you update `install-service.ps1` or `run-app.ps1`, run the install script again so the Windows PC gets the updated launcher copy.
 
 ## Quick Troubleshooting
 

@@ -3,7 +3,7 @@ param(
     [string]$PublishPath,
 
     [Parameter(Mandatory = $true)]
-    [string]$DeployPath,
+    [string]$AppRoot,
 
     [Parameter(Mandatory = $true)]
     [string]$TaskName,
@@ -21,12 +21,19 @@ if (-not (Test-Path $PublishPath)) {
     throw "Publish path not found: $PublishPath"
 }
 
-if (-not (Test-Path $DeployPath)) {
-    New-Item -ItemType Directory -Path $DeployPath -Force | Out-Null
+if (-not (Test-Path $AppRoot)) {
+    New-Item -ItemType Directory -Path $AppRoot -Force | Out-Null
 }
 
 $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 $processName = [System.IO.Path]::GetFileNameWithoutExtension($ExeName)
+$releasesRoot = Join-Path $AppRoot "releases"
+$releaseName = "$($env:GITHUB_RUN_ID)-$($env:GITHUB_RUN_ATTEMPT)"
+if ($releaseName -eq "-") {
+    $releaseName = (Get-Date).ToString("yyyyMMddHHmmss")
+}
+$releasePath = Join-Path $releasesRoot $releaseName
+$activeReleaseFile = Join-Path $AppRoot "active-release.txt"
 
 if ($null -ne $task) {
     Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
@@ -40,41 +47,27 @@ while ((Get-Process -Name $processName -ErrorAction SilentlyContinue) -and (Get-
 }
 
 if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
-    throw "The process $processName is still running and is locking files in $DeployPath."
+    throw "The process $processName is still running and is locking files in $AppRoot."
 }
 
-function Remove-DeploymentContents {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Path
-    )
-
-    $items = Get-ChildItem -Path $Path -Force -ErrorAction SilentlyContinue
-    foreach ($item in $items) {
-        Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction Stop
-    }
+if (-not (Test-Path $releasesRoot)) {
+    New-Item -ItemType Directory -Path $releasesRoot -Force | Out-Null
 }
 
-for ($attempt = 1; $attempt -le 5; $attempt++) {
-    try {
-        # Clear the deployment folder so old files do not survive a new release.
-        Remove-DeploymentContents -Path $DeployPath
-        break
-    } catch {
-        if ($attempt -eq 5) {
-            throw
-        }
-
-        Start-Sleep -Seconds 2
-    }
+if (Test-Path $releasePath) {
+    Remove-Item -Path $releasePath -Recurse -Force
 }
 
-Copy-Item -Path (Join-Path $PublishPath "*") -Destination $DeployPath -Recurse -Force
+New-Item -ItemType Directory -Path $releasePath -Force | Out-Null
 
-$exePath = Join-Path $DeployPath $ExeName
+Copy-Item -Path (Join-Path $PublishPath "*") -Destination $releasePath -Recurse -Force
+
+$exePath = Join-Path $releasePath $ExeName
 if (-not (Test-Path $exePath)) {
     throw "Expected executable was not found after deployment: $exePath"
 }
+
+Set-Content -Path $activeReleaseFile -Value $releaseName -NoNewline
 
 if ($null -ne $task) {
     Start-ScheduledTask -TaskName $TaskName

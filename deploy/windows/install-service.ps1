@@ -6,7 +6,10 @@ param(
     [string]$DisplayName,
 
     [Parameter(Mandatory = $true)]
-    [string]$ExePath,
+    [string]$AppRoot,
+
+    [Parameter(Mandatory = $true)]
+    [string]$ExeName,
 
     [Parameter(Mandatory = $true)]
     [string]$AppUrl
@@ -14,17 +17,25 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-if (-not (Test-Path $ExePath)) {
-    throw "Executable not found: $ExePath"
+if (-not (Test-Path $AppRoot)) {
+    New-Item -ItemType Directory -Path $AppRoot -Force | Out-Null
 }
 
 $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 if ($null -ne $existing) {
-    Write-Host "Scheduled task already exists: $TaskName"
-    exit 0
+    Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
 }
 
-$action = New-ScheduledTaskAction -Execute $ExePath -Argument "--urls `"$AppUrl`""
+$launcherSource = Join-Path $PSScriptRoot "run-app.ps1"
+if (-not (Test-Path $launcherSource)) {
+    throw "Launcher script not found in repo: $launcherSource"
+}
+
+$launcher = Join-Path $AppRoot "run-app.ps1"
+Copy-Item -Path $launcherSource -Destination $launcher -Force
+
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$launcher`" -AppRoot `"$AppRoot`" -ExeName `"$ExeName`" -AppUrl `"$AppUrl`""
 $trigger = New-ScheduledTaskTrigger -AtStartup
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries

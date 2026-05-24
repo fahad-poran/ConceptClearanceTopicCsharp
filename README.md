@@ -43,7 +43,7 @@ This repo includes a starter GitHub Actions deployment for a private Windows ser
 1. Push to `main`.
 2. GitHub Actions publishes `InterviewPrep.Web` as a Windows self-contained app.
 3. A self-hosted Windows runner on your PC downloads the build artifact.
-4. A PowerShell deploy script replaces the files and restarts a Windows startup task.
+4. A PowerShell deploy script writes the build into a versioned release folder and restarts a Windows startup task.
 
 ### Files added for deployment
 
@@ -57,6 +57,8 @@ This repo includes a starter GitHub Actions deployment for a private Windows ser
 
 - Task name: `InterviewPrepWeb`
 - Deploy directory: `C:\apps\InterviewPrepWeb`
+- Release folders: `C:\apps\InterviewPrepWeb\releases\<run-id>-<attempt>`
+- Active release file: `C:\apps\InterviewPrepWeb\active-release.txt`
 - LAN URL: `http://<windows-ip>:5157`
 
 ### One-time setup on the Windows machine
